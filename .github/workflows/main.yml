@@ -1,0 +1,44 @@
+name: Build ESP32-C3 Bin File
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+
+      - name: Install ESP32 Platform
+        run: |
+          arduino-cli config init
+          arduino-cli config set board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install Required Libraries
+        run: |
+          arduino-cli lib install "Adafruit GFX Library"
+          arduino-cli lib install "Adafruit ST7789 Library"
+
+      - name: Compile Code and Export Bin (Huge APP 3MB Partition)
+        run: |
+          # 💡 လမ်းကြောင်းအား Code/sketch_jun9a.ino ဟု တိတိကျကျ ပြောင်းလဲထားသည်
+          arduino-cli compile --fqbn esp32:esp32:esp32c3 \
+            --build-property "build.partitions=huge_app" \
+            --build-path ./build_output \
+            ./Code/sketch_jun9a.ino
+
+      - name: Upload Bin File to GitHub Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ESP32-C3-Firmware-Bin
+          path: ./build_output/Code/sketch_jun9a.ino.bin
+          
