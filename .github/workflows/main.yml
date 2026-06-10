@@ -26,11 +26,11 @@ jobs:
       - name: Install Required Libraries
         run: |
           arduino-cli lib install "Adafruit GFX Library"
-          # 💡 ST7789 အတွက် Library နာမည်အမှန်ကို ကွက်တိပြင်ဆင်ထားသည်
           arduino-cli lib install "Adafruit ST7735 and ST7789 Library"
 
       - name: Compile Code and Export Bin (Huge APP 3MB Partition)
         run: |
+          # 💡 Folder နှင့် ဖိုင်နာမည်မတူသည့် ပြဿနာကို တိုက်ရိုက်လမ်းကြောင်းပြ၍ ဖြေရှင်းထားသည်
           arduino-cli compile --fqbn esp32:esp32:esp32c3 \
             --build-property "build.partitions=huge_app" \
             --build-path ./build_output \
@@ -40,11 +40,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ESP32-C3-Firmware-Bin
-          path: ./build_output/Code/sketch_jun9a.ino.bin
-          
-      - name: Upload Bin File to GitHub Artifacts
-        uses: actions/upload-artifact@v4 # v3 မှ v4 သို့ အောင်မြင်စွာ ပြောင်းလဲထားသည်
-        with:
-          name: ESP32-C3-Firmware-Bin
-          path: ./build_output/Code/sketch_jun9a.ino.bin
-          
+          path: ./build_output/sketch_jun9a.ino.bin
